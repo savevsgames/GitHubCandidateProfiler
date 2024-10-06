@@ -8,6 +8,7 @@ import CandidateProfile from "../components/CandidateProfile";
 
 const mapCandidate = (candidate: CandidateAPIResponse): Candidate => {
   return {
+    id: candidate.id,
     name: candidate.name,
     username: candidate.login,
     location: "",
@@ -15,6 +16,7 @@ const mapCandidate = (candidate: CandidateAPIResponse): Candidate => {
     email: "",
     html_url: candidate.html_url,
     company: candidate.organizations_url,
+    bio: candidate.bio,
   };
 };
 
@@ -55,14 +57,34 @@ const CandidateSearch: React.FC = () => {
     findCandidates();
   }, []);
 
+  useEffect(() => {
+    if (possibleCandidates.length > 0) {
+      setActiveCandidate(possibleCandidates[0]);
+    } else {
+      setActiveCandidate(null); // No more candidates left
+    }
+  }, [possibleCandidates]); // Triggered whenever possibleCandidates changes
+
+  const updateCandidates = (removedCandidate: Candidate) => {
+    const updatedCandidates = possibleCandidates.filter(
+      (candidate: Candidate) => candidate.username !== removedCandidate.username
+    );
+    setPossibleCandidates(updatedCandidates);
+  };
+
   // Add a candidate to the final list
   const addCandidateHandler = async (username: string) => {
     try {
+      // Fetch the candidate's profile based on their username (activeCandidate)
       const gitUser = await searchGithubUser(username);
       console.log("Adding", gitUser);
-      setActiveCandidate(gitUser);
+      // Add the candidate to the final candidates list
       setFinalCandidates([...finalCandidates, gitUser]);
+      // Remove the candidate from the possible candidates list
+      updateCandidates(gitUser);
       console.log("Final Candidates:", finalCandidates);
+      // Set the active candidate to the next candidate in the possible candidates list
+      setActiveCandidate(possibleCandidates[0]);
     } catch (error) {
       setError("An error occurred while fetching the candidate's profile");
       alert(error);
@@ -71,13 +93,14 @@ const CandidateSearch: React.FC = () => {
 
   // Remove a candidate from the possible candidates list
   const removeCandidateHandler = async (username: string) => {
+    // Fetch the candidate's profile based on their username (activeCandidate)
     const gitUser = await searchGithubUser(username);
     console.log(gitUser);
     console.log("Removing candidate: ", gitUser);
-    const updatedCandidates = finalCandidates.filter(
-      (candidate: Candidate) => candidate.username !== username
-    );
-    setFinalCandidates(updatedCandidates);
+    // Update the possible candidates list
+    updateCandidates(gitUser);
+    // Set the active candidate to the next candidate in the possible candidates list
+    setActiveCandidate(possibleCandidates[0]);
     console.log(username, "removed");
   };
 
@@ -87,7 +110,7 @@ const CandidateSearch: React.FC = () => {
       <main className="search-wrapper">
         {activeCandidate ? (
           <CandidateProfile
-            key={activeCandidate.username}
+            key={activeCandidate.id}
             {...activeCandidate}
             onAddCandidate={addCandidateHandler}
             onRemoveCandidate={removeCandidateHandler}
@@ -98,7 +121,7 @@ const CandidateSearch: React.FC = () => {
         <div>
           {finalCandidates.map((candidate) => {
             const { username } = candidate;
-            return <div key={candidate.username}>{username}</div>;
+            return <div key={candidate.id}>{username}</div>;
           })}
         </div>
       </main>

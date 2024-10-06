@@ -1,4 +1,5 @@
 export type Candidate = {
+  id: string | number;
   name: string | null;
   username: string; // Cannot be null
   location: string | null;
@@ -6,6 +7,7 @@ export type Candidate = {
   email: string | null;
   html_url: string | undefined; // Cannot be null
   company: string | null;
+  bio: string | null;
 };
 
 export interface CandidateProfileProps extends Candidate {
@@ -29,7 +31,7 @@ export type CandidateAPIResponse = {
   gravatar_id: string | null;
   hireable: string | null;
   html_url: string | undefined; // Cannot be null
-  id: string | number | null;
+  id: string | number; // Cannot be null
   location: string | null;
   login: string; // Cannot be null
   name: string | null;
