@@ -1,11 +1,14 @@
 import { useState, useEffect } from "react";
 import { searchGithub, searchGithubUser } from "../api/API";
-import {Candidate, CandidateAPIResponse } from "../interfaces/Candidate.interface";
-
+import {
+  Candidate,
+  CandidateAPIResponse,
+} from "../interfaces/Candidate.interface";
+import CandidateProfile from "../components/CandidateProfile";
 
 const mapCandidate = (candidate: CandidateAPIResponse): Candidate => {
   return {
-    name: candidate.login,
+    name: candidate.name,
     username: candidate.login,
     location: "",
     avatar: candidate.avatar_url,
@@ -13,24 +16,33 @@ const mapCandidate = (candidate: CandidateAPIResponse): Candidate => {
     html_url: candidate.html_url,
     company: candidate.organizations_url,
   };
-}
+};
 
-const CandidateSearch = () => {
-  const [candidates, setCandidates] = useState([]);
-  const [lookupCandidate, setLookupCandidate] = useState("");
+const CandidateSearch: React.FC = () => {
+  const [possibleCandidates, setPossibleCandidates] = useState<Candidate[]>([]);
+  const [finalCandidates, setFinalCandidates] = useState<Candidate[]>([]);
+  const [activeCandidate, setActiveCandidate] = useState<Candidate | null>(
+    null
+  );
+  console.log("Possible Candidates:", possibleCandidates);
   const [error, setError] = useState("");
 
+  // Initial fetch of candidates
   const findCandidates = async () => {
-    // Fetch the candidates from the API
-    // If the fetch fails, return an error and setError
-    // Otherwise, setCandidates with the results from the API
     try {
       const response = await searchGithub();
       if (response.length === 0) {
         setError("No candidates found");
         alert(error);
       } else {
-        setCandidates(response);
+        const candidateList = response.map(
+          (candidate: CandidateAPIResponse) => {
+            return mapCandidate(candidate);
+          }
+        );
+        console.log("Candidate List:", candidateList);
+        setPossibleCandidates(candidateList);
+        setActiveCandidate(candidateList[0]);
       }
     } catch (error) {
       setError("An error occurred while fetching the candidates");
@@ -38,40 +50,57 @@ const CandidateSearch = () => {
     }
   };
 
+  // Fetch the possible candidates when the component mounts
   useEffect(() => {
     findCandidates();
   }, []);
 
-  const lookupCandidateHandler = async (username: string) => {
+  // Add a candidate to the final list
+  const addCandidateHandler = async (username: string) => {
     try {
-      const user = await searchGithubUser(username);
-      console.log(user);
-      setLookupCandidate(user);
+      const gitUser = await searchGithubUser(username);
+      console.log("Adding", gitUser);
+      setActiveCandidate(gitUser);
+      setFinalCandidates([...finalCandidates, gitUser]);
+      console.log("Final Candidates:", finalCandidates);
     } catch (error) {
       setError("An error occurred while fetching the candidate's profile");
       alert(error);
     }
   };
 
+  // Remove a candidate from the possible candidates list
+  const removeCandidateHandler = async (username: string) => {
+    const gitUser = await searchGithubUser(username);
+    console.log(gitUser);
+    console.log("Removing candidate: ", gitUser);
+    const updatedCandidates = finalCandidates.filter(
+      (candidate: Candidate) => candidate.username !== username
+    );
+    setFinalCandidates(updatedCandidates);
+    console.log(username, "removed");
+  };
+
   return (
     <>
       <h1>CandidateSearch</h1>
-      <main>
-        {candidates.map((candidate) => {
-          const githubUser: Candidate = mapCandidate(candidate);
-          return (
-            <div key={githubUser.username}>
-              <h2>{githubUser.name}</h2>
-              <h3>{githubUser.username}</h3>
-              <img src={githubUser.avatar} alt={githubUser.username} />
-              <button
-                onClick={() => lookupCandidateHandler(githubUser.username)}
-              >
-                {githubUser.username}'s Profile
-              </button>
-            </div>
-          );
-        })}
+      <main className="search-wrapper">
+        {activeCandidate ? (
+          <CandidateProfile
+            key={activeCandidate.username}
+            {...activeCandidate}
+            onAddCandidate={addCandidateHandler}
+            onRemoveCandidate={removeCandidateHandler}
+          />
+        ) : (
+          <div>Loading...</div>
+        )}
+        <div>
+          {finalCandidates.map((candidate) => {
+            const { username } = candidate;
+            return <div key={candidate.username}>{username}</div>;
+          })}
+        </div>
       </main>
     </>
   );

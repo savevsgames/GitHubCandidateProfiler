@@ -1,17 +1,20 @@
-// TODO: Create an interface for the Candidate objects returned by the API
-//  candidate's name, username, location, avatar, email, html_url, and company
 export type Candidate = {
   name: string | null;
-  username: string | null;
+  username: string; // Cannot be null
   location: string | null;
-  avatar: string | null;
+  avatar: string | undefined; // Cannot be null
   email: string | null;
-  html_url: string | null;
+  html_url: string | undefined; // Cannot be null
   company: string | null;
 };
 
+export interface CandidateProfileProps extends Candidate {
+  onAddCandidate: (username: string) => void;
+  onRemoveCandidate: (username: string) => void;
+}
+
 export type CandidateAPIResponse = {
-  avatar_url: string | null;
+  avatar_url: string | undefined; // Cannot be null
   bio: string | null;
   blog: string | null;
   company: string | null;
@@ -25,10 +28,10 @@ export type CandidateAPIResponse = {
   gists_url: string | null;
   gravatar_id: string | null;
   hireable: string | null;
-  html_url: string | null;
+  html_url: string | undefined; // Cannot be null
   id: string | number | null;
   location: string | null;
-  login: string | null;
+  login: string; // Cannot be null
   name: string | null;
   node_id: string | null;
   organizations_url: string | null;
