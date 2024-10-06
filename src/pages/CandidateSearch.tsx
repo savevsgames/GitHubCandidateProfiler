@@ -26,7 +26,6 @@ const CandidateSearch: React.FC = () => {
   const [activeCandidate, setActiveCandidate] = useState<Candidate | null>(
     null
   );
-  console.log("Possible Candidates:", possibleCandidates);
   const [error, setError] = useState("");
 
   // Initial fetch of candidates
@@ -58,8 +57,17 @@ const CandidateSearch: React.FC = () => {
   }, []);
 
   useEffect(() => {
+    console.log("Final Candidates:", finalCandidates);
+  }, [finalCandidates]); // Triggered whenever finalCandidates changes
+
+  useEffect(() => {
+    console.log("Active Candidate:", activeCandidate);
+  }, [activeCandidate]);
+
+  useEffect(() => {
     if (possibleCandidates.length > 0) {
       setActiveCandidate(possibleCandidates[0]);
+      console.log("Possible Candidates:", possibleCandidates);
     } else {
       setActiveCandidate(null); // No more candidates left
     }
@@ -67,7 +75,7 @@ const CandidateSearch: React.FC = () => {
 
   const updateCandidates = (removedCandidate: Candidate) => {
     const updatedCandidates = possibleCandidates.filter(
-      (candidate: Candidate) => candidate.username !== removedCandidate.username
+      (candidate: Candidate) => candidate.id !== removedCandidate.id
     );
     setPossibleCandidates(updatedCandidates);
   };
@@ -77,14 +85,18 @@ const CandidateSearch: React.FC = () => {
     try {
       // Fetch the candidate's profile based on their username (activeCandidate)
       const gitUser = await searchGithubUser(username);
+      // Add logic to make sure the username exists and the response was not 404
+      if (!gitUser) {
+        setError("The next candidate's profile does not exist");
+        alert(error);
+        
+        return;
+      }
       console.log("Adding", gitUser);
       // Add the candidate to the final candidates list
       setFinalCandidates([...finalCandidates, gitUser]);
       // Remove the candidate from the possible candidates list
       updateCandidates(gitUser);
-      console.log("Final Candidates:", finalCandidates);
-      // Set the active candidate to the next candidate in the possible candidates list
-      setActiveCandidate(possibleCandidates[0]);
     } catch (error) {
       setError("An error occurred while fetching the candidate's profile");
       alert(error);
@@ -95,12 +107,10 @@ const CandidateSearch: React.FC = () => {
   const removeCandidateHandler = async (username: string) => {
     // Fetch the candidate's profile based on their username (activeCandidate)
     const gitUser = await searchGithubUser(username);
-    console.log(gitUser);
     console.log("Removing candidate: ", gitUser);
     // Update the possible candidates list
     updateCandidates(gitUser);
-    // Set the active candidate to the next candidate in the possible candidates list
-    setActiveCandidate(possibleCandidates[0]);
+
     console.log(username, "removed");
   };
 
