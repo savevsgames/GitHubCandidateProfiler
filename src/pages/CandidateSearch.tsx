@@ -1,74 +1,9 @@
 import { useState, useEffect } from "react";
 import { searchGithub, searchGithubUser } from "../api/API";
-import Candidate from "../interfaces/Candidate.interface";
+import {Candidate, CandidateAPIResponse } from "../interfaces/Candidate.interface";
 
-// export interface Candidate {
-//   name: string;
-//   username: string;
-//   location: string;
-//   avatar: string;
-//   email: string;
-//   html_url: string;
-//   company: string;
-// }
 
-// response for one user:
-// avatar_url
-// : 
-// "https://avatars.githubusercontent.com/u/14284298?v=4"
-// events_url
-// : 
-// "https://api.github.com/users/AndrewMangeni/events{/privacy}"
-// followers_url
-// : 
-// "https://api.github.com/users/AndrewMangeni/followers"
-// following_url
-// : 
-// "https://api.github.com/users/AndrewMangeni/following{/other_user}"
-// gists_url
-// : 
-// "https://api.github.com/users/AndrewMangeni/gists{/gist_id}"
-// gravatar_id
-// : 
-// ""
-// html_url
-// : 
-// "https://github.com/AndrewMangeni"
-// id
-// : 
-// 14284298
-// login
-// : 
-// "AndrewMangeni"
-// node_id
-// : 
-// "MDQ6VXNlcjE0Mjg0Mjk4"
-// organizations_url
-// : 
-// "https://api.github.com/users/AndrewMangeni/orgs"
-// received_events_url
-// : 
-// "https://api.github.com/users/AndrewMangeni/received_events"
-// repos_url
-// : 
-// "https://api.github.com/users/AndrewMangeni/repos"
-// site_admin
-// : 
-// false
-// starred_url
-// : 
-// "https://api.github.com/users/AndrewMangeni/starred{/owner}{/repo}"
-// subscriptions_url
-// : 
-// "https://api.github.com/users/AndrewMangeni/subscriptions"
-// type
-// : 
-// "User"
-// url
-// : 
-// "https://api.github.com/users/AndrewMangeni"
-
-const mapCandidate = (candidate: any): Candidate => {
+const mapCandidate = (candidate: CandidateAPIResponse): Candidate => {
   return {
     name: candidate.login,
     username: candidate.login,
