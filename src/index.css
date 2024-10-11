@@ -78,9 +78,15 @@ main {
   color: #fff;
   width: 100%;
   min-height: 100vh;
+  text-align: center;
+}
+
+#profile-table {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
+  margin: 0 auto;
 }
 
 tr {
@@ -93,16 +99,46 @@ tbody tr:nth-child(odd) {
   background-color: #333333;
 }
 
+tr img {
+  max-width: 50px;
+  max-height: 50px;
+  border-radius: 10%;
+  margin: auto;
+}
+
+td {
+  padding: 0.5em;
+}
+
+td#data {
+  min-width: 10vw;
+}
+
+td #img {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 70px;
+  margin: auto;
+}
+
+table button {
+  border: none;
+  color: white;
+  border-radius: 100%;
+  background-color: #f12a2a;
+  cursor: pointer;
+}
 
 .nav {
   display: flex;
   justify-content: flex-start;
-  padding: 1em 2em;
+  padding: 0 2em;
   flex-direction: row;
 }
 
 .nav-item {
-  padding: 0 0.5rem;
+  padding: 0 1rem;
   list-style: none;
 }
 
@@ -124,11 +160,21 @@ tbody tr:nth-child(odd) {
 .search-wrapper {
   display: flex;
   justify-content: center;
-  margin: auto;
+  margin: 0 auto;
   max-width: 80vw;
 }
 
+.profile-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  justify-items: flex-start;
+  margin: 0 auto;
+  max-width: 20vw;
+}
+
 .profile-card {
+  text-align: start;
   display: flex;
   flex-direction: column;
   align-items: start;
@@ -136,9 +182,8 @@ tbody tr:nth-child(odd) {
   border-radius: 10%;
   background-color: #333333;
   color: white;
-  margin: 1em;
-  min-height: 500px;
-  min-width: 300px;
+  margin: 0 1em;
+  max-height: 60vh;
 }
 
 .profile-card img {

@@ -42,8 +42,13 @@ const CandidateSearch: React.FC = () => {
           }
         );
         console.log("Candidate List:", candidateList);
-        setPossibleCandidates(candidateList);
-        setActiveCandidate(candidateList[0]);
+        // Logic to remove candidates that have no id or are 404 from the list ie candidate.id === null
+        const filteredCandidates = candidateList.filter(
+          (candidate: Candidate) => candidate.id !== null
+        );
+        // Use the filtered candidates list to set the possible candidates and the active candidate
+        setPossibleCandidates(filteredCandidates);
+        setActiveCandidate(filteredCandidates[0]);
       }
     } catch (error) {
       setError("An error occurred while fetching the candidates");
@@ -54,16 +59,63 @@ const CandidateSearch: React.FC = () => {
   // Fetch the possible candidates when the component mounts
   useEffect(() => {
     findCandidates();
+    loadCandidatesFile();
   }, []);
 
+  // Load the final candidates list from local storage || create a new file, with [], if it doesn't exist
+  const loadCandidatesFile = async () => {
+    try {
+      const candidates = localStorage.getItem("finalCandidates");
+      if (candidates) {
+        const parsedCandidates: Candidate[] = JSON.parse(candidates);
+        setFinalCandidates(parsedCandidates);
+      } else {
+        localStorage.setItem("finalCandidates", "[]");
+        console.log(
+          "No candidates found in local storage. Candidates file created."
+        );
+      }
+    } catch (error) {
+      console.log("Error loading candidates file.", error);
+    }
+  };
+
+  // Update the local storage file with the final candidates list - takes an up to date list of candidates as an argument
+  const updateCandidatesFile = async (finalCandidates: Candidate[]) => {
+    try {
+      const newCandidatesList: string = JSON.stringify(finalCandidates);
+      localStorage.setItem("finalCandidates", newCandidatesList);
+    } catch (error) {
+      console.log("Error updating candidates file.", error);
+    }
+  };
+
+  // Add a candidate to the final candidates list
+  const addFinalCandidate = (candidate: Candidate) => {
+    const finalCandidateList = [...finalCandidates, candidate];
+    updateCandidatesFile(finalCandidateList);
+  };
+
+  // Update the possible candidates list after removing a candidate
+  const updateCandidates = (removedCandidate: Candidate) => {
+    const updatedCandidates = possibleCandidates.filter(
+      (candidate: Candidate) => candidate.id !== removedCandidate.id
+    );
+    setPossibleCandidates(updatedCandidates);
+  };
+
+  // use hook to update the local storage file whenever finalCandidates changes
   useEffect(() => {
     console.log("Final Candidates:", finalCandidates);
+    updateCandidatesFile(finalCandidates);
   }, [finalCandidates]); // Triggered whenever finalCandidates changes
 
+  // use hook to log the active candidate whenever it changes
   useEffect(() => {
     console.log("Active Candidate:", activeCandidate);
   }, [activeCandidate]);
 
+  // use hook to set the active candidate whenever possibleCandidates changes
   useEffect(() => {
     if (possibleCandidates.length > 0) {
       setActiveCandidate(possibleCandidates[0]);
@@ -72,13 +124,6 @@ const CandidateSearch: React.FC = () => {
       setActiveCandidate(null); // No more candidates left
     }
   }, [possibleCandidates]); // Triggered whenever possibleCandidates changes
-
-  const updateCandidates = (removedCandidate: Candidate) => {
-    const updatedCandidates = possibleCandidates.filter(
-      (candidate: Candidate) => candidate.id !== removedCandidate.id
-    );
-    setPossibleCandidates(updatedCandidates);
-  };
 
   // Add a candidate to the final list
   const addCandidateHandler = async (username: string) => {
@@ -89,7 +134,7 @@ const CandidateSearch: React.FC = () => {
       if (!gitUser) {
         setError("The next candidate's profile does not exist");
         alert(error);
-        
+
         return;
       }
       console.log("Adding", gitUser);
@@ -97,12 +142,17 @@ const CandidateSearch: React.FC = () => {
       setFinalCandidates([...finalCandidates, gitUser]);
       // Remove the candidate from the possible candidates list
       updateCandidates(gitUser);
+      // Update the local storage file
+      addFinalCandidate(gitUser);
     } catch (error) {
       setError("An error occurred while fetching the candidate's profile");
       alert(error);
     }
   };
 
+  // THIS LOGIC IS NOT PASSING TESTING - NEED TO pass the active user, then remove them by
+  // filtering out the active user from the possibleCandidates list instead of fetching the
+  // user again from the API - that way i cannot get a 404 error
   // Remove a candidate from the possible candidates list
   const removeCandidateHandler = async (username: string) => {
     // Fetch the candidate's profile based on their username (activeCandidate)
@@ -128,12 +178,6 @@ const CandidateSearch: React.FC = () => {
         ) : (
           <div>Loading...</div>
         )}
-        <div>
-          {finalCandidates.map((candidate) => {
-            const { username } = candidate;
-            return <div key={candidate.id}>{username}</div>;
-          })}
-        </div>
       </main>
     </>
   );
