@@ -32,7 +32,7 @@ const CandidateProfile = ({
         {bio && <p>Bio: {bio}</p>}
       </div>
       <div className="addRemoveButtons">
-        <button className="remove" onClick={() => onRemoveCandidate(username)}>
+        <button className="remove" onClick={() => onRemoveCandidate(id)}>
           -
         </button>
         <button className="add" onClick={() => onAddCandidate(username)}>

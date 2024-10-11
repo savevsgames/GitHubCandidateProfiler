@@ -97,9 +97,9 @@ const CandidateSearch: React.FC = () => {
   };
 
   // Update the possible candidates list after removing a candidate
-  const updateCandidates = (removedCandidate: Candidate) => {
+  const updateCandidates = (removedCandidateId: string | number) => {
     const updatedCandidates = possibleCandidates.filter(
-      (candidate: Candidate) => candidate.id !== removedCandidate.id
+      (candidate: Candidate) => candidate.id !== removedCandidateId
     );
     setPossibleCandidates(updatedCandidates);
   };
@@ -141,7 +141,7 @@ const CandidateSearch: React.FC = () => {
       // Add the candidate to the final candidates list
       setFinalCandidates([...finalCandidates, gitUser]);
       // Remove the candidate from the possible candidates list
-      updateCandidates(gitUser);
+      updateCandidates(gitUser.id);
       // Update the local storage file
       addFinalCandidate(gitUser);
     } catch (error) {
@@ -154,14 +154,15 @@ const CandidateSearch: React.FC = () => {
   // filtering out the active user from the possibleCandidates list instead of fetching the
   // user again from the API - that way i cannot get a 404 error
   // Remove a candidate from the possible candidates list
-  const removeCandidateHandler = async (username: string) => {
-    // Fetch the candidate's profile based on their username (activeCandidate)
-    const gitUser = await searchGithubUser(username);
-    console.log("Removing candidate: ", gitUser);
-    // Update the possible candidates list
-    updateCandidates(gitUser);
+  const removeCandidateHandler = async (id: string) => {
+    const candidateList = finalCandidates.filter(
+      (candidate: Candidate) => candidate.id !== id
+    );
+    setFinalCandidates(candidateList);
+    // console.log("Removing candidate: ", gitUser);
+    updateCandidates(id);
 
-    console.log(username, "removed");
+    console.log(id, "removed");
   };
 
   return (
