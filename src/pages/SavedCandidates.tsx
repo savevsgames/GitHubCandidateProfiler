@@ -41,6 +41,34 @@ const SavedCandidates = () => {
     });
   };
 
+  const filterCandidatesLocation = (candidates: Candidate[]) => {
+    return candidates.filter((candidate) => {
+      return candidate.location !== null;
+    });
+  };
+
+  const filterCandidatesEmail = (candidates: Candidate[]) => {
+    return candidates.filter((candidate) => {
+      return candidate.email !== null;
+    });
+  };
+
+  const filterCandidatesCompany = (candidates: Candidate[]) => {
+    return candidates.filter((candidate) => {
+      return candidate.company !== null;
+    });
+  };
+
+  const filterCandidatesBio = (candidates: Candidate[]) => {
+    return candidates.filter((candidate) => {
+      return candidate.bio !== null;
+    });
+  };
+
+  const refreshPage = () => {
+    window.location.reload();
+  };
+
   // Used in development and testing only
   // const deleteLocalStorage = async () => {
   //   localStorage.removeItem("finalCandidates");
@@ -59,15 +87,56 @@ const SavedCandidates = () => {
 
   return (
     <section id="profile-table">
+      <h3
+        id="filter"
+        onClick={() => {
+          refreshPage();
+        }}
+      >
+        Click to Refresh and Remove Filters
+      </h3>
       <table id="candidate-table">
-        <thead>         
+        <thead>
           <tr id="table-headers">
             <th>Image</th>
-            <th id="sort" onClick={() => setCandidates(sortCandidates([...candidates]))}>Name (click to sort)</th>
-            <th>Location</th>
-            <th>Email</th>
-            <th>Company</th>
-            <th>Bio</th>
+            <th
+              id="sort"
+              onClick={() => setCandidates(sortCandidates([...candidates]))}
+            >
+              Name (click to sort)
+            </th>
+            <th
+              id="filter"
+              onClick={() =>
+                setCandidates(filterCandidatesLocation([...candidates]))
+              }
+            >
+              Location (click to filter)
+            </th>
+            <th
+              id="filter"
+              onClick={() =>
+                setCandidates(filterCandidatesEmail([...candidates]))
+              }
+            >
+              Email (click to filter)
+            </th>
+            <th
+              id="filter"
+              onClick={() =>
+                setCandidates(filterCandidatesCompany([...candidates]))
+              }
+            >
+              Company (click to filter)
+            </th>
+            <th
+              id="filter"
+              onClick={() =>
+                setCandidates(filterCandidatesBio([...candidates]))
+              }
+            >
+              Bio (click to filter)
+            </th>
             <th>Reject</th>
           </tr>
         </thead>
@@ -91,9 +160,9 @@ const SavedCandidates = () => {
                 <td id="data">
                   View{" "}
                   <a href={`https://github.com/${username}`}>
-                    {username +"'s " || "View Profile"}
+                    {username + "'s " || "View Profile"}
                   </a>
-                   profile
+                  profile
                 </td>
                 <td id="data">{location || "No Location Specified"}</td>
                 <td id="data">{email || "No Email Specified"}</td>

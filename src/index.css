@@ -145,6 +145,14 @@ div#loading {
   color: #f58d52;
 }
 
+#filter {
+  cursor: pointer;
+}
+
+#filter:hover {
+  color: #f58d52;
+}
+
 
 th {
   min-width: 50px;
