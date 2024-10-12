@@ -137,6 +137,15 @@ div#loading {
   text-align: center;
 }
 
+#sort {
+  cursor: pointer;
+}
+
+#sort:hover {
+  color: #f58d52;
+}
+
+
 th {
   min-width: 50px;
 }

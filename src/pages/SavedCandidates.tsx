@@ -29,6 +29,18 @@ const SavedCandidates = () => {
     setCandidates(updatedCandidates);
   };
 
+  const sortCandidates = (candidates: Candidate[]) => {
+    return candidates.sort((a, b) => {
+      if (a.username < b.username) {
+        return -1;
+      }
+      if (a.username > b.username) {
+        return 1;
+      }
+      return 0;
+    });
+  };
+
   // Used in development and testing only
   // const deleteLocalStorage = async () => {
   //   localStorage.removeItem("finalCandidates");
@@ -48,10 +60,10 @@ const SavedCandidates = () => {
   return (
     <section id="profile-table">
       <table id="candidate-table">
-        <thead>
+        <thead>         
           <tr id="table-headers">
             <th>Image</th>
-            <th>Name</th>
+            <th id="sort" onClick={() => setCandidates(sortCandidates([...candidates]))}>Name (click to sort)</th>
             <th>Location</th>
             <th>Email</th>
             <th>Company</th>
