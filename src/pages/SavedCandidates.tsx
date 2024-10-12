@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
-import { CandidateAPIResponse } from "../interfaces/Candidate.interface";
+import { Candidate } from "../interfaces/Candidate.interface";
 
 const SavedCandidates = () => {
-  const [candidates, setCandidates] = useState<CandidateAPIResponse[]>([]);
+  const [candidates, setCandidates] = useState<Candidate[]>([]);
 
   const getCandidates = async () => {
     try {
       const candidates = localStorage.getItem("finalCandidates");
       if (candidates) {
-        const parsedCandidates: CandidateAPIResponse[] = JSON.parse(candidates);
+        const parsedCandidates: Candidate[] = JSON.parse(candidates);
         setCandidates(parsedCandidates);
       } else {
         localStorage.setItem("finalCandidates", "[]");
@@ -21,7 +21,7 @@ const SavedCandidates = () => {
     }
   };
 
-  const removeFinalCandidate = async (candidate: CandidateAPIResponse) => {
+  const removeFinalCandidate = async (candidate: Candidate) => {
     const updatedCandidates = candidates.filter(
       (finalCandidate) => finalCandidate.id !== candidate.id
     );
@@ -29,8 +29,15 @@ const SavedCandidates = () => {
     setCandidates(updatedCandidates);
   };
 
+  // Used in development and testing only
+  // const deleteLocalStorage = async () => {
+  //   localStorage.removeItem("finalCandidates");
+  //   setCandidates([]);
+  // };
+
   useEffect(() => {
     getCandidates();
+    // deleteLocalStorage(); // Used in development and testing only
   }, []);
 
   // Log the final candidates whenever the component mounts
@@ -56,8 +63,8 @@ const SavedCandidates = () => {
           {candidates.map((candidate) => {
             const {
               id,
-              avatar_url,
-              login,
+              avatar,
+              username,
               name,
               location,
               email,
@@ -67,9 +74,15 @@ const SavedCandidates = () => {
             return (
               <tr key={id}>
                 <td>
-                  <img src={avatar_url} alt={name || "User Avatar"} />
+                  <img src={avatar} alt={name || "User Avatar"} />
                 </td>
-                <td id="data">{login || "No Name Given"}</td>
+                <td id="data">
+                  View{" "}
+                  <a href={`https://github.com/${username}`}>
+                    {username +"'s " || "View Profile"}
+                  </a>
+                   profile
+                </td>
                 <td id="data">{location || "No Location Specified"}</td>
                 <td id="data">{email || "No Email Specified"}</td>
                 <td id="data">{company || "None Specified"}</td>

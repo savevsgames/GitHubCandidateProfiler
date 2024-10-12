@@ -81,12 +81,52 @@ main {
   text-align: center;
 }
 
+article#loading-circle {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+div#loading-text {
+  font-size: 2em;
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+div#loading {
+  width: 60px;
+  height: 60px;
+  border: 8px solid transparent;
+  border-top-color: #f58d52;
+  border-bottom-color: #e0b196;
+  border-left-color: #b36105;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: auto;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 #profile-table {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   margin: 0 auto;
+  max-width: 80vw;
 }
 
 tr {
@@ -108,6 +148,7 @@ tr img {
 
 td {
   padding: 0.5em;
+  overflow-wrap: break-word;
 }
 
 td#data {
@@ -167,10 +208,11 @@ table button {
 .profile-wrapper {
   display: flex;
   flex-wrap: wrap;
-  align-content: flex-start;
-  justify-items: flex-start;
+  flex-direction: column;
+  align-content: center;
+  justify-content: flex-start;
   margin: 0 auto;
-  max-width: 20vw;
+  width: 20vw;
 }
 
 .profile-card {
@@ -182,7 +224,6 @@ table button {
   border-radius: 10%;
   background-color: #333333;
   color: white;
-  margin: 0 1em;
   max-height: 60vh;
 }
 
@@ -192,6 +233,7 @@ table button {
   overflow: hidden;
   object-fit: cover;
   width: 100%;
+  margin: auto;
 }
 
 .profile-card h2 {
@@ -199,7 +241,8 @@ table button {
 }
 
 .profile-card p {
-  margin: 0 0 0.25rem 1em;
+  margin: 0.5rem 1rem;
+  overflow-wrap: break-word;
 }
 
 .profile-card p:last-child {
@@ -208,23 +251,44 @@ table button {
 
 .addRemoveButtons {
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
   width: 100%;
+  min-width: 15vw;
   margin: 1rem 0 1rem 0;
 }
 
 .addRemoveButtons button.remove {
+  background-color: #db1c1c;
   width: 4rem;
   height: 4rem;
   border-radius: 100%;
+  color: white;
+  font-size: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.addRemoveButtons button.remove:hover {
   background-color: #db1c1c;
+  box-shadow: 0 0 0.1rem 0.2rem rgba(255, 255, 255, 0.87);
 }
 
 .addRemoveButtons button.add {
   width: 4rem;
   height: 4rem;
   border-radius: 100%;
+  color: white;
+  font-size: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   background-color: #0f860f;
+}
+
+.addRemoveButtons button.add:hover {
+  background-color: #0f860f;
+  box-shadow: 0 0 0.1rem 0.2rem rgba(255, 255, 255, 0.87);
 }
 
 @media screen and (max-width: 500px) {

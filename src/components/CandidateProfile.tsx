@@ -1,30 +1,24 @@
 import { CandidateProfileProps } from "../interfaces/Candidate.interface";
 
-const CandidateProfile = ({
-  id,
-  name,
-  username,
-  email,
-  html_url,
-  avatar,
-  location,
-  company,
-  bio,
+const CandidateProfile: React.FC<CandidateProfileProps> = ({
+  candidate: { id, name, username, email, avatar, location, company, bio },
   onAddCandidate,
   onRemoveCandidate,
-}: CandidateProfileProps) => {
+}) => {
   return (
     <article className="profile-wrapper">
       <div key={id} className="profile-card">
         <img src={avatar} alt={username} />
-        <h2>
-          {username}({name})
-        </h2>
-        {html_url && (
+        <h2>{username}</h2>
+        {username && (
           <p>
-            Profile: <a href={html_url}>[Link to Profile]</a>
+            Profile:{" "}
+            <a target="_blank" href={`https://github.com/${username}`}>
+              [Link to Profile]
+            </a>
           </p>
         )}
+        {name && <p>Name: {name}</p>}
         {location && <p>Location: {location}</p>}
         {email && <p>Email: {email}</p>}
 
@@ -35,7 +29,7 @@ const CandidateProfile = ({
         <button className="remove" onClick={() => onRemoveCandidate(id)}>
           -
         </button>
-        <button className="add" onClick={() => onAddCandidate(username)}>
+        <button className="add" onClick={() => onAddCandidate(id)}>
           +
         </button>
       </div>

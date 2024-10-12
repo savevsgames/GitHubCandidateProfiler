@@ -11,11 +11,10 @@ const mapCandidate = (candidate: CandidateAPIResponse): Candidate => {
     id: candidate.id,
     name: candidate.name,
     username: candidate.login,
-    location: "",
+    location: candidate.location,
     avatar: candidate.avatar_url,
-    email: "",
-    html_url: candidate.html_url,
-    company: candidate.organizations_url,
+    email: candidate.email,
+    company: candidate.company,
     bio: candidate.bio,
   };
 };
@@ -32,19 +31,21 @@ const CandidateSearch: React.FC = () => {
   const findCandidates = async () => {
     try {
       const response = await searchGithub();
+      // console.log("Response:", response);
       if (response.length === 0) {
         setError("No candidates found");
         alert(error);
       } else {
-        const candidateList = response.map(
-          (candidate: CandidateAPIResponse) => {
-            return mapCandidate(candidate);
-          }
-        );
-        console.log("Candidate List:", candidateList);
+        const candidateList = [];
+        for (const candidate of response) {
+          const candidateProfile = await searchGithubUser(candidate.login);
+          const mappedCandidate = mapCandidate(candidateProfile);
+          candidateList.push(mappedCandidate);
+        }
+        // console.log("Candidate List:", candidateList);
         // Logic to remove candidates that have no id or are 404 from the list ie candidate.id === null
         const filteredCandidates = candidateList.filter(
-          (candidate: Candidate) => candidate.id !== null
+          (candidate: Candidate) => candidate.id !== undefined
         );
         // Use the filtered candidates list to set the possible candidates and the active candidate
         setPossibleCandidates(filteredCandidates);
@@ -80,6 +81,12 @@ const CandidateSearch: React.FC = () => {
     }
   };
 
+  const refreshCandidates = async () => {
+    // If there is only one possible candidate left, fetch more candidates so that if the page refreshes, there are still candidates to display
+    if (possibleCandidates.length === 1) {
+      findCandidates();
+    }
+  };
   // Update the local storage file with the final candidates list - takes an up to date list of candidates as an argument
   const updateCandidatesFile = async (finalCandidates: Candidate[]) => {
     try {
@@ -97,11 +104,14 @@ const CandidateSearch: React.FC = () => {
   };
 
   // Update the possible candidates list after removing a candidate
-  const updateCandidates = (removedCandidateId: string | number) => {
+  const updatePossibleCandidates = (candidateId: number) => {
     const updatedCandidates = possibleCandidates.filter(
-      (candidate: Candidate) => candidate.id !== removedCandidateId
+      (candidate: Candidate) => candidate.id !== candidateId
     );
     setPossibleCandidates(updatedCandidates);
+
+    // If there are no more possible candidates, this will fetch more
+    refreshCandidates();
   };
 
   // use hook to update the local storage file whenever finalCandidates changes
@@ -126,43 +136,31 @@ const CandidateSearch: React.FC = () => {
   }, [possibleCandidates]); // Triggered whenever possibleCandidates changes
 
   // Add a candidate to the final list
-  const addCandidateHandler = async (username: string) => {
+  const addCandidateHandler = async (id: number) => {
     try {
-      // Fetch the candidate's profile based on their username (activeCandidate)
-      const gitUser = await searchGithubUser(username);
-      // Add logic to make sure the username exists and the response was not 404
-      if (!gitUser) {
-        setError("The next candidate's profile does not exist");
-        alert(error);
+      const candidateToAdd: Candidate = possibleCandidates.find(
+        (candidate: Candidate) => candidate.id === id
+      ) as Candidate;
 
-        return;
-      }
-      console.log("Adding", gitUser);
-      // Add the candidate to the final candidates list
-      setFinalCandidates([...finalCandidates, gitUser]);
+      setFinalCandidates([...finalCandidates, candidateToAdd]);
       // Remove the candidate from the possible candidates list
-      updateCandidates(gitUser.id);
+      updatePossibleCandidates(candidateToAdd.id);
       // Update the local storage file
-      addFinalCandidate(gitUser);
+      addFinalCandidate(candidateToAdd);
     } catch (error) {
       setError("An error occurred while fetching the candidate's profile");
       alert(error);
     }
   };
 
-  // THIS LOGIC IS NOT PASSING TESTING - NEED TO pass the active user, then remove them by
-  // filtering out the active user from the possibleCandidates list instead of fetching the
-  // user again from the API - that way i cannot get a 404 error
   // Remove a candidate from the possible candidates list
-  const removeCandidateHandler = async (id: string) => {
+  const removeCandidateHandler = async (id: number) => {
     const candidateList = finalCandidates.filter(
       (candidate: Candidate) => candidate.id !== id
     );
     setFinalCandidates(candidateList);
-    // console.log("Removing candidate: ", gitUser);
-    updateCandidates(id);
-
-    console.log(id, "removed");
+    console.log("Removing candidate: ", id);
+    updatePossibleCandidates(id);
   };
 
   return (
@@ -172,12 +170,17 @@ const CandidateSearch: React.FC = () => {
         {activeCandidate ? (
           <CandidateProfile
             key={activeCandidate.id}
-            {...activeCandidate}
+            candidate={activeCandidate}
             onAddCandidate={addCandidateHandler}
             onRemoveCandidate={removeCandidateHandler}
           />
         ) : (
-          <div>Loading...</div>
+          <article id="loading-circle">
+            <div id="loading-text">
+              Finding candidates and looking up their information...
+            </div>
+            <div id="loading"></div>
+          </article>
         )}
       </main>
     </>

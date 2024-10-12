@@ -1,18 +1,18 @@
 export type Candidate = {
-  id: string | number;
+  id: number;
   name: string | null;
   username: string; // Cannot be null
   location: string | null;
   avatar: string | undefined; // Cannot be null
   email: string | null;
-  html_url: string | undefined; // Cannot be null
   company: string | null;
   bio: string | null;
 };
 
-export interface CandidateProfileProps extends Candidate {
-  onAddCandidate: (username: string) => void;
-  onRemoveCandidate: (username: string) => void;
+export interface CandidateProfileProps {
+  candidate: Candidate;
+  onAddCandidate: (id: number) => void;
+  onRemoveCandidate: (id: number) => void;
 }
 
 export type CandidateAPIResponse = {
@@ -31,7 +31,7 @@ export type CandidateAPIResponse = {
   gravatar_id: string | null;
   hireable: string | null;
   html_url: string | undefined; // Cannot be null
-  id: string | number; // Cannot be null
+  id: number; // Cannot be null
   location: string | null;
   login: string; // Cannot be null
   name: string | null;
