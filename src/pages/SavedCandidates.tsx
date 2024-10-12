@@ -47,9 +47,9 @@ const SavedCandidates = () => {
 
   return (
     <section id="profile-table">
-      <table>
+      <table id="candidate-table">
         <thead>
-          <tr>
+          <tr id="table-headers">
             <th>Image</th>
             <th>Name</th>
             <th>Location</th>

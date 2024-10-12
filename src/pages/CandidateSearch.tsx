@@ -164,7 +164,7 @@ const CandidateSearch: React.FC = () => {
   };
 
   return (
-    <>
+    <section id="search">
       <h1>CandidateSearch</h1>
       <main className="search-wrapper">
         {activeCandidate ? (
@@ -183,7 +183,7 @@ const CandidateSearch: React.FC = () => {
           </article>
         )}
       </main>
-    </>
+    </section>
   );
 };
 

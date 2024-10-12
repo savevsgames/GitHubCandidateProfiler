@@ -122,11 +122,23 @@ div#loading {
 
 #profile-table {
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  flex-wrap: wrap;
   justify-content: center;
   margin: 0 auto;
   max-width: 80vw;
+  flex-direction: column;
+}
+
+#candidate-table {
+  display: block;
+  margin: 0 auto;
+  max-width: 80vw;
+  overflow-x: auto;
+  text-align: center;
+}
+
+th {
+  min-width: 50px;
 }
 
 tr {
@@ -212,7 +224,7 @@ table button {
   align-content: center;
   justify-content: flex-start;
   margin: 0 auto;
-  width: 20vw;
+  width: 25vw;
 }
 
 .profile-card {
@@ -224,7 +236,7 @@ table button {
   border-radius: 10%;
   background-color: #333333;
   color: white;
-  max-height: 60vh;
+  max-height: 70vh;
 }
 
 .profile-card img {
@@ -291,8 +303,24 @@ table button {
   box-shadow: 0 0 0.1rem 0.2rem rgba(255, 255, 255, 0.87);
 }
 
-@media screen and (max-width: 500px) {
-  h1 {
-    font-size: 2.2em;
+@media (max-width: 1170px) {
+  .profile-wrapper {
+    width: 40vw;
+  }
+
+  #search h1 {
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .profile-wrapper {
+    width: 60vw;
+  }
+}
+
+@media (max-width: 500px) {
+  .profile-wrapper {
+    width: 80vw;
   }
 }
